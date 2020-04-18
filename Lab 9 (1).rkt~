@@ -87,8 +87,7 @@
 ;; (generate 10 5 2) -> '((50 2) (50 1))   <- These values aren't valid for RSA, but they generate keys just fine
 ;;
 ;; Type signature: (generate int int int) -> '((int int) (int int))
-(define (generate p q e)
-  (list (list (* p q) e) (list (* p q) (mul-inv e (lcm (- p 1) (- q 1))))))
+(define (generate p q e) (list (list (* p q) e) (list (* p q) (mul-inv e (lcm (- p 1) (- q 1))))))
 
 
 ;;-----------------------------------------------------------
@@ -139,7 +138,7 @@
 ;; Type signature: (mod-exp int int int) -> int
 (define (mod-exp b e m) (cond ((equal? e 0) 1)
                               ((even? e) (modulo (expt (mod-exp b (/ e 2) m) 2) m))
-                              (else (modulo (* (mod-exp b (- e 1) m) b) m))))
+                              ((odd? e) (modulo (* (mod-exp b (- e 1) m) b) m))))
 
 
 
@@ -207,7 +206,7 @@
    -> "RACKET IS GREAT"
 |#
 ;; Type signature: (decrypt int-list '(int int)) -> string
-(define (decrypt ciphertext key) (cond ((null? ciphertext) "")
+(define (decrypt ciphertext key) (cond ((equal? ciphertext '()) "")
                                        (else (string-append (list->string (list (integer->char (mod-exp (car ciphertext) (car (cdr key)) (car key))))) (decrypt (cdr ciphertext) key)))))
 
 
